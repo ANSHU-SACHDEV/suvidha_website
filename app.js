@@ -156,6 +156,11 @@ app.get('/donate', (req, res) => {
   res.render('pages/donate');
 });
 
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 
 app.post('/create-checkout-session', async (req, res) => {
   const { amount } = req.body;
