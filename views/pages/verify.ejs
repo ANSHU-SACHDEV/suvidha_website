@@ -1,0 +1,37 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-center">Verify Your Certificate</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form action="/verify-certificate" method="POST" class="mb-4">
+        <input type="text" name="certificate_id" class="form-control" placeholder="Enter Certificate ID" required>
+        <button type="submit" class="btn btn-warning mt-3">Verify</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-md-6 offset-4">
+
+      <% if (error) { %>
+        <div class="alert alert-danger text-center"><%= error %></div>
+      <% } %>
+
+      <% if (cert) { %>
+        <div class="card shadow text-center">
+          <div class="card-body">
+            <h5 class="card-title text-success fw-bold">Certificate Verified ✅</h5>
+            <p><strong>Certificate ID:</strong> <%= cert.certificate_id %></p>
+            <p><strong>Name:</strong> <%= cert.name %></p>
+            <p><strong>Event:</strong> <%= cert.event_name %></p>
+            <p><strong>Issued On:</strong> <%= cert.issue_date.toDateString() %></p>
+          </div>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+  <br><br>
+</div>

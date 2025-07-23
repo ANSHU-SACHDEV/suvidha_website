@@ -1,0 +1,34 @@
+<% layout('layouts/boilerplate') %>
+  <body>
+    <h2>Complete Payment</h2>
+    <button id="rzp-button">Pay Now</button>
+
+    <script>
+      const options = {
+        key: "<%= key_id %>",
+        amount: "<%= order.amount %>",
+        currency: "<%= order.currency %>",
+        name: "Suvidha Foundation",
+        description: "Donation",
+        order_id: "<%= order.id %>",
+        handler: function (response) {
+          alert("Thank you for your donation!");
+          window.location.href = "/donation-success";
+        },
+        prefill: {
+          name: "",
+          email: "",
+        },
+        theme: {
+          color: "#528FF0",
+        },
+      };
+
+      const rzp1 = new Razorpay(options);
+      document.getElementById('rzp-button').onclick = function (e) {
+        rzp1.open();
+        e.preventDefault();
+      };
+    </script>
+  </body>
+

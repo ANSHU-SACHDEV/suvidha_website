@@ -1,0 +1,27 @@
+<% layout('layouts/boilerplate') %>
+<h1 class="text-center my-4">Make a Donation</h1>
+<div class="container text-center">
+  <input type="number" id="amount" class="form-control w-25 mx-auto" placeholder="Enter amount in USD">
+  <button id="donateBtn" class="btn btn-warning mt-3 mb-3">Donate</button>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+  const stripe = Stripe('pk_test_51RnER8FZzwQzg0tO3s6bKn5YsFQBxGTGaYaWT2tAVPQHrbd4Iva0PZiRz6rTMKWNpaykYdV491ByKdCcUpVeIlmL00Olg2HOng');
+
+  document.getElementById('donateBtn').addEventListener('click', async () => {
+    const amount = document.getElementById('amount').value;
+
+    const res = await fetch('/create-checkout-session', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ amount })
+    });
+
+    const data = await res.json();
+    stripe.redirectToCheckout({ sessionId: data.id });
+  });
+</script>
+
