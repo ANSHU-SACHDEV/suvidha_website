@@ -132,20 +132,33 @@ app.post('/verify-certificate', async (req, res) => {
   }
 });
 
-mongoose.connect('mongodb://127.0.0.1:27017/suvidha_certificates', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(async () => {
-  console.log(' MongoDB connected in app.js');
+// mongoose.connect('mongodb://127.0.0.1:27017/suvidha_certificates', {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// })
+// .then(async () => {
+//   console.log(' MongoDB connected in app.js');
 
-  const existing = await Certificate.countDocuments();
-  if (existing === 0) {
-    await Certificate.insertMany(certificates);
-    console.log('Sample certificates inserted into DB');
-  } else {
-    console.log(' Certificates already exist, skipping insert');
-  }
+  // const existing = await Certificate.countDocuments();
+  // if (existing === 0) {
+  //   await Certificate.insertMany(certificates);
+  //   console.log('Sample certificates inserted into DB');
+  // } else {
+  //   console.log(' Certificates already exist, skipping insert');
+  // }
+
+mongoose.connect(process.env.MONGODB_URI)
+  .then(async () => {
+    console.log('✅ MongoDB connected');
+
+    const existing = await Certificate.countDocuments();
+    if (existing === 0) {
+      await Certificate.insertMany(certificates);
+      console.log('Sample certificates inserted into DB');
+    } else {
+      console.log('Certificates already exist, skipping insert');
+    }
+
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
