@@ -149,7 +149,7 @@ app.post('/verify-certificate', async (req, res) => {
 
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
-    console.log('✅ MongoDB connected');
+    console.log(' MongoDB connected');
 
     const existing = await Certificate.countDocuments();
     if (existing === 0) {
