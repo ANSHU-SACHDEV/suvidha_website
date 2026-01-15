@@ -1,119 +1,47 @@
 require('dotenv').config();
 
-const express = require('express')
-const app = express()
-const ejsMate=require("ejs-mate");
+const express = require('express');
+const app = express();
+const ejsMate = require("ejs-mate");
 const mongoose = require('mongoose');
 const certificates = require('./init/data'); 
 const Certificate = require('./models/certificate');
-
-// const Razorpay = require('razorpay');
 const bodyParser = require('body-parser');
 const path = require('path');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-
+//middlewares
+app.engine('ejs', ejsMate);
 app.set('view engine', 'ejs');
-app.engine('ejs',ejsMate);
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(express.static('public'));
 
+// app.get("/", (req, res) => res.send("hi"));
+app.get("/", (req, res) => res.render("pages/home"));
+app.get("/events", (req, res) => res.render("pages/events"));
+app.get("/gallery", (req, res) => res.render("pages/gallery"));
+app.get("/donate", (req, res) => res.render("pages/donate"));
+app.get("/donors", (req, res) => res.render("pages/donors"));
+app.get("/privacy", (req, res) => res.render("pages/privacy"));
+app.get("/workshops", (req, res) => res.render("pages/workshops"));
+app.get("/trees", (req, res) => res.render("pages/trees"));
+app.get("/suv_events", (req, res) => res.render("pages/suv_event"));
+app.get("/animal", (req, res) => res.render("pages/animal"));
+app.get("/books", (req, res) => res.render("pages/books"));
+app.get("/clothes", (req, res) => res.render("pages/clothes"));
+app.get("/education", (req, res) => res.render("pages/education"));
+app.get("/emp_women", (req, res) => res.render("pages/emp_women"));
+app.get("/food", (req, res) => res.render("pages/food"));
+app.get("/free", (req, res) => res.render("pages/free"));
+app.get("/online", (req, res) => res.render("pages/online"));
+app.get("/women", (req, res) => res.render("pages/women"));
 
-// app.get('/success', (req, res) => {
-//   res.send(' Thank you for your donation! (Demo)');
-// });
-app.get("/",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/home.ejs");
-})
-
-app.get("/events",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/events.ejs");
-})
-
-
-app.get("/gallery",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/gallery.ejs");
-});
-
-app.get("/donate",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/donate.ejs");
-});
-
-app.get("/donors",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/donors.ejs");
-});
-app.get("/privacy",(req,res)=>{
-  // res.send("events page");
-  res.render("pages/privacy.ejs");
-});
-
-// app.get("/backend/events",(req,res)=>{
-//   // res.send("events page");
-//   res.render("events.ejs");
-// })
-
-
-// app.get('/', (req, res) => {
-//   // res.render("index.html");
-//   res.send("hello!");
-// })
-
-app.get('/workshops', (req, res) => {
-  res.render('pages/workshops'); 
-});
-
-app.get('/trees', (req, res) => {
-  res.render('pages/trees'); 
-});
-
-app.get('/suv_events', (req, res) => {
-  res.render('pages/suv_event'); 
-});
-
-app.get('/animal', (req, res) => {
-  res.render('pages/animal'); 
-});
-app.get('/books', (req, res) => {
-  res.render('pages/books'); 
-});
-app.get('/clothes', (req, res) => {
-  res.render('pages/clothes'); 
-});
-app.get('/education', (req, res) => {
-  res.render('pages/education'); 
-});
-app.get('/emp_women', (req, res) => {
-  res.render('pages/emp_women'); 
-});
-app.get('/food', (req, res) => {
-  res.render('pages/food'); 
-});
-app.get('/free', (req, res) => {
-  res.render('pages/free'); 
-});
-
-app.get('/online', (req, res) => {
-  res.render('pages/online'); 
-});
-
-app.get('/women', (req, res) => {
-  res.render('pages/women'); 
-});
-
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.set('view engine', 'ejs');
-app.use(express.static('public')); // if you have CSS/JS/assets
-
-
+// Certificate Verification 
 app.get('/verify-certificate', (req, res) => {
-  res.render('pages/verify.ejs', { cert: null, error: null });
+  res.render('pages/verify', { cert: null, error: null });
 });
-
+// app.use(CORS())
 
 app.post('/verify-certificate', async (req, res) => {
   const { certificate_id } = req.body;
@@ -128,53 +56,10 @@ app.post('/verify-certificate', async (req, res) => {
     res.render('pages/verify', { cert, error: null });
   } catch (err) {
     console.error(err);
-    res.render('verify', { cert: null, error: 'Something went wrong. Try again later.' });
+    res.render('pages/verify', { cert: null, error: 'Something went wrong. Try again later.' });
   }
 });
-
-// mongoose.connect('mongodb://127.0.0.1:27017/suvidha_certificates', {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true
-// })
-// .then(async () => {
-//   console.log(' MongoDB connected in app.js');
-
-  // const existing = await Certificate.countDocuments();
-  // if (existing === 0) {
-  //   await Certificate.insertMany(certificates);
-  //   console.log('Sample certificates inserted into DB');
-  // } else {
-  //   console.log(' Certificates already exist, skipping insert');
-  // }
-
-mongoose.connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log(' MongoDB connected');
-
-    const existing = await Certificate.countDocuments();
-    if (existing === 0) {
-      await Certificate.insertMany(certificates);
-      console.log('Sample certificates inserted into DB');
-    } else {
-      console.log('Certificates already exist, skipping insert');
-    }
-
-
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-
-
-app.use(express.json());
-
-app.get('/donate', (req, res) => {
-  res.render('pages/donate');
-});
-
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-
+//donation
 app.post('/create-checkout-session', async (req, res) => {
   const { amount } = req.body;
 
@@ -189,10 +74,8 @@ app.post('/create-checkout-session', async (req, res) => {
         {
           price_data: {
             currency: 'usd',
-            product_data: {
-              name: 'Donation to Suvidha Foundation',
-            },
-            unit_amount: parseInt(amount * 100), 
+            product_data: { name: 'Donation to Suvidha Foundation' },
+            unit_amount: parseInt(amount * 100), // cents
           },
           quantity: 1,
         },
@@ -210,9 +93,16 @@ app.post('/create-checkout-session', async (req, res) => {
 });
 
 
-app.listen(3000, (req,res) => {
-  console.log("app is listening on port 3000");
-});
-
+mongoose.connect("process.env.MONGO_URI", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
 })
-.catch(err=>console.error("failed",err));
+.then(async () => {
+  console.log(" Local MongoDB Connected");
+
+  
+  app.listen(3000, () => {
+    console.log(" App is listening on port 3000");
+  });
+})
+.catch(err => console.error(" MongoDB connection failed:", err));
