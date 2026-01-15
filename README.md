@@ -44,3 +44,7 @@ To focus on key concepts and speed up development:
   
    git clone https://github.com/your-username/suvidha_foundation_website.git
    cd suvidha_foundation_website
+
+
+## the site is live at:
+https://suvidhawebsite-production.up.railway.app/
