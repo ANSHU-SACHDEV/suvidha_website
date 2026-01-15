@@ -100,9 +100,17 @@ mongoose.connect("process.env.MONGO_URI", {
 .then(async () => {
   console.log(" Local MongoDB Connected");
 
-  
-  app.listen(3000, () => {
-    console.log(" App is listening on port 3000");
-  });
+  const PORT = process.env.PORT || 3000;
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Server running on port ${PORT}`);
+});
 })
-.catch(err => console.error(" MongoDB connection failed:", err));
+ .catch(err => console.error(" MongoDB connection failed:", err));
+
+
+  
+//   app.listen(3000, () => {
+//     console.log(" App is listening on port 3000");
+//   });
+// })
+// .catch(err => console.error(" MongoDB connection failed:", err));
